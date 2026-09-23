@@ -6,47 +6,52 @@ import java.util.List;
 import java.util.UUID;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Version;
 import org.springframework.data.neo4j.core.schema.Node;
 import org.springframework.data.neo4j.core.schema.Relationship;
 
+import ch.realflorianchrist.caddms.user.UserEntity;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@Getter
+@Setter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Node("Document")
-public record DocumentEntity(
+public class DocumentEntity {
 
-        @Id UUID id,
+    @Id
+    private UUID documentId;
 
-        Instant createdAt,
+    @Version
+    private Long persistenceVersion;
 
-        UUID createdBy,
+    private Instant createdAt;
 
-        boolean archived,
+    private boolean archived;
 
-        @Relationship(type = "CURRENT_VERSION") DocumentVersionEntity currentVersion,
+    @Relationship(type = "CREATED_BY")
+    private UserEntity createdBy;
 
-        @Relationship(type = "HAS_VERSION") List<DocumentVersionEntity> versions
+    @Relationship(type = "CURRENT_VERSION")
+    private DocumentVersionEntity currentVersion;
 
-) {
+    @Relationship(type = "HAS_VERSION")
+    private List<DocumentVersionEntity> versions = new ArrayList<>();
 
-    public DocumentEntity {
-        versions = versions == null
-                ? List.of()
-                : List.copyOf(versions);
-
-        if (currentVersion != null &&
-                !versions.contains(currentVersion)) {
-            throw new IllegalArgumentException(
-                    "Current version must be part of versions");
-        }
+    public DocumentEntity(UserEntity createdBy, DocumentVersionEntity currentVersion) {
+        this.documentId = UUID.randomUUID();
+        this.createdAt = Instant.now();
+        this.createdBy = createdBy;
+        this.archived = false;
+        this.currentVersion = currentVersion;
+        this.versions.add(currentVersion);
     }
 
-    public static DocumentEntity create(
-            UUID createdBy,
-            DocumentVersionEntity initialVersion) {
-        return new DocumentEntity(
-                UUID.randomUUID(),
-                Instant.now(),
-                createdBy,
-                false,
-                initialVersion,
-                List.of(initialVersion));
+    public void addVersion(DocumentVersionEntity version) {
+        this.versions.add(version);
+        this.currentVersion = version;
     }
 }
