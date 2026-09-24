@@ -21,7 +21,7 @@ import lombok.Setter;
 public class DocumentVersionEntity {
 
     @Id
-    private UUID versionId;
+    private UUID documentVersionId;
 
     @Version
     private Long persistenceVersion;
@@ -52,7 +52,7 @@ public class DocumentVersionEntity {
             long fileSize,
             UserEntity createdBy) {
 
-        this.versionId = UUID.randomUUID();
+        this.documentVersionId = UUID.randomUUID();
         this.number = number;
         this.name = name;
         this.extension = extension;
