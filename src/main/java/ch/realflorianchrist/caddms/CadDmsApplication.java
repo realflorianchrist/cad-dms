@@ -16,7 +16,7 @@ import ch.realflorianchrist.caddms.project.ProjectEntity;
 import ch.realflorianchrist.caddms.project.ProjectRepository;
 import ch.realflorianchrist.caddms.project.ProjectRole;
 import ch.realflorianchrist.caddms.user.UserEntity;
-import ch.realflorianchrist.caddms.user.UserRespository;
+import ch.realflorianchrist.caddms.user.UserRepository;
 
 @SpringBootApplication
 public class CadDmsApplication {
@@ -27,13 +27,13 @@ public class CadDmsApplication {
 
 	@Bean
 	CommandLineRunner testNeo4j(
-			UserRespository userRespository,
+			UserRepository userRepository,
 			ProjectRepository projectRepository,
 			DirectoryRepository directoryRepository,
 			DocumentRepository documentRepository,
 			DocumentVersionRepository documentVersionRepository) {
 		return args -> {
-			userRespository.deleteAll();
+			userRepository.deleteAll();
 			projectRepository.deleteAll();
 			directoryRepository.deleteAll();
 			documentRepository.deleteAll();
@@ -81,7 +81,7 @@ public class CadDmsApplication {
 
 			user.getProjectAccess().add(new ProjectAccessEntity(ProjectRole.OWNER, project));
 
-			userRespository.save(user);
+			userRepository.save(user);
 		};
 	}
 }

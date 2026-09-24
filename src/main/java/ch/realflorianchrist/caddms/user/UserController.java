@@ -13,7 +13,7 @@ import lombok.RequiredArgsConstructor;
 @Controller
 public class UserController {
 
-    private final UserRespository userRepository;
+    private final UserRepository userRepository;
 
     @QueryMapping
     public UserEntity user(@Argument("userId") UUID userId) {
