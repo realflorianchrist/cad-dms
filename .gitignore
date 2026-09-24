@@ -35,3 +35,9 @@ out/
 
 ### VS Code ###
 .vscode/
+
+.fake
+
+# misc
+.DS_Store
+*.pem
