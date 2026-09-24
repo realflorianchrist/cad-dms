@@ -1,4 +1,4 @@
-package ch.realflorianchrist.caddms.controllers.user;
+package ch.realflorianchrist.caddms.user;
 
 import java.util.List;
 import java.util.UUID;
@@ -7,8 +7,6 @@ import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
 import org.springframework.stereotype.Controller;
 
-import ch.realflorianchrist.caddms.user.UserEntity;
-import ch.realflorianchrist.caddms.user.UserRespository;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
