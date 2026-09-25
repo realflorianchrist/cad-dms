@@ -1,5 +1,7 @@
 package ch.realflorianchrist.caddms;
 
+import java.util.List;
+
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -11,6 +13,13 @@ import ch.realflorianchrist.caddms.document.DocumentEntity;
 import ch.realflorianchrist.caddms.document.DocumentRepository;
 import ch.realflorianchrist.caddms.document.DocumentVersionEntity;
 import ch.realflorianchrist.caddms.document.DocumentVersionRepository;
+import ch.realflorianchrist.caddms.metadata.MetadataBinding;
+import ch.realflorianchrist.caddms.metadata.MetadataDefinitionEntity;
+import ch.realflorianchrist.caddms.metadata.MetadataDefinitionRepository;
+import ch.realflorianchrist.caddms.metadata.MetadataReach;
+import ch.realflorianchrist.caddms.metadata.MetadataTargetType;
+import ch.realflorianchrist.caddms.metadata.MetadataType;
+import ch.realflorianchrist.caddms.metadata.MetadataValue;
 import ch.realflorianchrist.caddms.project.ProjectAccessEntity;
 import ch.realflorianchrist.caddms.project.ProjectEntity;
 import ch.realflorianchrist.caddms.project.ProjectRepository;
@@ -31,13 +40,15 @@ public class CadDmsApplication {
 			ProjectRepository projectRepository,
 			DirectoryRepository directoryRepository,
 			DocumentRepository documentRepository,
-			DocumentVersionRepository documentVersionRepository) {
+			DocumentVersionRepository documentVersionRepository,
+			MetadataDefinitionRepository metadataDefinitionRepository) {
 		return args -> {
 			userRepository.deleteAll();
 			projectRepository.deleteAll();
 			directoryRepository.deleteAll();
 			documentRepository.deleteAll();
 			documentVersionRepository.deleteAll();
+			metadataDefinitionRepository.deleteAll();
 
 			var user = new UserEntity(
 					"test-identity-provider",
@@ -69,7 +80,7 @@ public class CadDmsApplication {
 					1024L,
 					user);
 
-			project.getDocuments().add(document);
+			directory3.getDocuments().add(document);
 			project.getDirectories().add(directory);
 
 			directory.getDirectories().add(directory2);
@@ -77,6 +88,42 @@ public class CadDmsApplication {
 
 			document.addVersion(documentVersion2);
 
+			// SELF: Ein Feld mit eigenem Wert direkt am Projekt.
+			var projectNumber = new MetadataDefinitionEntity("projectNumber", "Projektnummer", MetadataType.TEXT);
+			project.getMetadataBindings().add(
+					new MetadataBinding(projectNumber,
+							List.of(MetadataTargetType.PROJECT),
+							MetadataReach.SELF));
+			project.getMetadataValues().add(new MetadataValue(projectNumber, "P-2026-001"));
+
+			// DESCENDANTS: Dieses Feld gilt fuer alle Verzeichnisse im Projekt.
+			var building = new MetadataDefinitionEntity("building", "Gebaeude", MetadataType.TEXT);
+			var buildingBinding = new MetadataBinding(
+					building,
+					List.of(MetadataTargetType.DIRECTORY),
+					MetadataReach.DESCENDANTS);
+			buildingBinding.setDefaultValue("Hauptgebaeude");
+			project.getMetadataBindings().add(buildingBinding);
+			directory2.getMetadataValues().add(new MetadataValue(building, "Nebengebaeude"));
+
+			// Dokumente im gesamten Teilbaum von directory erhalten dieses Binding.
+			// Mit CHILDREN wuerde es nur fuer direkt enthaltene Dokumente gelten.
+			var discipline = new MetadataDefinitionEntity("discipline", "Gewerk", MetadataType.ENUM);
+			discipline.setOptions(List.of("Architektur", "Elektro", "Sanitaer"));
+			var disciplineBinding = new MetadataBinding(
+					discipline,
+					List.of(MetadataTargetType.DOCUMENT),
+					MetadataReach.DESCENDANTS);
+			disciplineBinding.setRequired(true);
+			disciplineBinding.setDefaultValue("Elektro");
+			directory.getMetadataBindings().add(disciplineBinding);
+
+			// Das Dokument in directory3 hat einen eigenen Wert statt des Standardwerts.
+			document.getMetadataValues().add(new MetadataValue(discipline, "Architektur"));
+
+			// Speichert auch die Definitionen und beide Arten von Metadata-Relationships.
+			// Vererbung und Pflichtfeldpruefung sind bisher nur modelliert, nicht
+			// implementiert.
 			projectRepository.save(project);
 
 			user.getProjectAccess().add(new ProjectAccessEntity(ProjectRole.OWNER, project));

@@ -11,6 +11,8 @@ import org.springframework.data.neo4j.core.schema.Node;
 import org.springframework.data.neo4j.core.schema.Relationship;
 
 import ch.realflorianchrist.caddms.user.UserEntity;
+import ch.realflorianchrist.caddms.metadata.MetadataBinding;
+import ch.realflorianchrist.caddms.metadata.MetadataValue;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -40,6 +42,12 @@ public class DocumentEntity {
 
     @Relationship(type = "HAS_VERSION")
     private List<DocumentVersionEntity> versions = new ArrayList<>();
+
+    @Relationship(type = "HAS_METADATA")
+    private List<MetadataBinding> metadataBindings = new ArrayList<>();
+
+    @Relationship(type = "HAS_METADATA_VALUE")
+    private List<MetadataValue> metadataValues = new ArrayList<>();
 
     public DocumentEntity(UserEntity createdBy, DocumentVersionEntity currentVersion) {
         this.documentId = UUID.randomUUID();

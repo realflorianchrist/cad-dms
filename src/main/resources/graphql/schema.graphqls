@@ -1,6 +1,47 @@
 scalar DateTime
 scalar Long
 
+enum MetadataType {
+  TEXT
+  NUMBER
+  BOOLEAN
+  DATE
+  ENUM
+}
+
+enum MetadataTargetType {
+  PROJECT
+  DIRECTORY
+  DOCUMENT
+}
+
+enum MetadataReach {
+  SELF
+  CHILDREN
+  DESCENDANTS
+}
+
+type MetadataDefinition {
+  metadataDefinitionId: ID!
+  key: String!
+  label: String!
+  type: MetadataType!
+  options: [String!]!
+}
+
+type MetadataBinding {
+  definition: MetadataDefinition!
+  targetTypes: [MetadataTargetType!]!
+  reach: MetadataReach!
+  required: Boolean!
+  defaultValue: String
+}
+
+type MetadataValue {
+  definition: MetadataDefinition!
+  value: String!
+}
+
 type User {
   userId: ID!
   displayName: String!
@@ -20,6 +61,9 @@ type Project {
 
   documents: [Document!]!
   directories: [Directory!]!
+
+  metadataBindings: [MetadataBinding!]!
+  metadataValues: [MetadataValue!]!
 }
 
 type Directory {
@@ -36,6 +80,9 @@ type Directory {
 
   documents: [Document!]!
   directories: [Directory!]!
+
+  metadataBindings: [MetadataBinding!]!
+  metadataValues: [MetadataValue!]!
 }
 
 type Document {
@@ -51,6 +98,9 @@ type Document {
 
   currentVersion: DocumentVersion!
   versions: [DocumentVersion!]!
+
+  metadataBindings: [MetadataBinding!]!
+  metadataValues: [MetadataValue!]!
 }
 
 type DocumentVersion {

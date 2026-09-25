@@ -13,6 +13,8 @@ import org.springframework.data.neo4j.core.schema.Relationship;
 import ch.realflorianchrist.caddms.directory.DirectoryEntity;
 import ch.realflorianchrist.caddms.document.DocumentEntity;
 import ch.realflorianchrist.caddms.user.UserEntity;
+import ch.realflorianchrist.caddms.metadata.MetadataBinding;
+import ch.realflorianchrist.caddms.metadata.MetadataValue;
 
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -45,6 +47,12 @@ public class ProjectEntity {
 
     @Relationship(type = "HAS_DIRECTORY")
     private List<DirectoryEntity> directories = new ArrayList<>();
+
+    @Relationship(type = "HAS_METADATA")
+    private List<MetadataBinding> metadataBindings = new ArrayList<>();
+
+    @Relationship(type = "HAS_METADATA_VALUE")
+    private List<MetadataValue> metadataValues = new ArrayList<>();
 
     public ProjectEntity(String name, UserEntity createdBy) {
         this.projectId = UUID.randomUUID();
