@@ -1,5 +1,6 @@
 package ch.realflorianchrist.caddms.directory;
 
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.graphql.data.method.annotation.Argument;
@@ -20,4 +21,13 @@ public class DirectoryController {
                 .orElse(null);
     }
 
+    @QueryMapping
+    public List<DirectoryEntity> directories() {
+        return directoryRepository.findAll();
+    }
+
+    @QueryMapping
+    public List<DirectoryEntity> rootDirectories() {
+        return directoryRepository.findRootDirectories();
+    }
 }

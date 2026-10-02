@@ -9,7 +9,6 @@ import org.springframework.data.neo4j.core.mapping.Neo4jMappingContext;
 
 import ch.realflorianchrist.caddms.directory.DirectoryEntity;
 import ch.realflorianchrist.caddms.document.DocumentEntity;
-import ch.realflorianchrist.caddms.project.ProjectEntity;
 
 class MetadataMappingTests {
 
@@ -17,7 +16,7 @@ class MetadataMappingTests {
     void mapsBindingsAndValuesAsRelationshipsToSharedDefinitions() {
         var context = new Neo4jMappingContext();
 
-        for (var owner : List.of(ProjectEntity.class, DirectoryEntity.class, DocumentEntity.class)) {
+        for (var owner : List.of(DirectoryEntity.class, DocumentEntity.class)) {
             var entity = context.getRequiredPersistentEntity(owner);
 
             for (var relationshipType : List.of("HAS_METADATA", "HAS_METADATA_VALUE")) {

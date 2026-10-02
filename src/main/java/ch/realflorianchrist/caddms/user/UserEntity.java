@@ -9,7 +9,7 @@ import org.springframework.data.annotation.Version;
 import org.springframework.data.neo4j.core.schema.Node;
 import org.springframework.data.neo4j.core.schema.Relationship;
 
-import ch.realflorianchrist.caddms.project.ProjectAccessEntity;
+import ch.realflorianchrist.caddms.directory.DirectoryAccessEntity;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -36,7 +36,7 @@ public class UserEntity {
     private boolean active;
 
     @Relationship(type = "HAS_ACCESS")
-    private List<ProjectAccessEntity> projectAccess = new ArrayList<>();
+    private List<DirectoryAccessEntity> directoryAccess = new ArrayList<>();
 
     public UserEntity(String identityProvider, String externalSubjectId, String displayName, boolean active) {
         this.userId = UUID.randomUUID();

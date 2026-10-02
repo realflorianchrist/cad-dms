@@ -10,7 +10,6 @@ enum MetadataType {
 }
 
 enum MetadataTargetType {
-  PROJECT
   DIRECTORY
   DOCUMENT
 }
@@ -45,25 +44,6 @@ type MetadataValue {
 type User {
   userId: ID!
   displayName: String!
-}
-
-type Project {
-  projectId: ID!
-  name: String!
-
-  createdAt: DateTime!
-  createdBy: User!
-
-  updatedAt: DateTime!
-  updatedBy: User!
-
-  archived: Boolean!
-
-  documents: [Document!]!
-  directories: [Directory!]!
-
-  metadataBindings: [MetadataBinding!]!
-  metadataValues: [MetadataValue!]!
 }
 
 type Directory {
@@ -115,22 +95,11 @@ type DocumentVersion {
   createdBy: User!
 }
 
-# type Data {
-#   documents: [Document!]!
-#   directories: [Directory!]!
-# }
-
 type Query {
   user(userId: ID!): User
   users: [User!]!
 
-  project(projectId: ID!): Project
-  projects: [Project!]!
-
   directory(directoryId: ID!): Directory
-
-  # projectData(projectId: ID!): Data!
-  # directoryData(directoryId: ID!): Data!
-
-  # directoryTree(directoryId: ID!, depth: Int! = 2): Directory!
+  directories: [Directory!]!
+  rootDirectories: [Directory!]!
 }

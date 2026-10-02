@@ -20,10 +20,8 @@ import ch.realflorianchrist.caddms.metadata.MetadataReach;
 import ch.realflorianchrist.caddms.metadata.MetadataTargetType;
 import ch.realflorianchrist.caddms.metadata.MetadataType;
 import ch.realflorianchrist.caddms.metadata.MetadataValue;
-import ch.realflorianchrist.caddms.project.ProjectAccessEntity;
-import ch.realflorianchrist.caddms.project.ProjectEntity;
-import ch.realflorianchrist.caddms.project.ProjectRepository;
-import ch.realflorianchrist.caddms.project.ProjectRole;
+import ch.realflorianchrist.caddms.directory.DirectoryAccessEntity;
+import ch.realflorianchrist.caddms.directory.DirectoryRole;
 import ch.realflorianchrist.caddms.user.UserEntity;
 import ch.realflorianchrist.caddms.user.UserRepository;
 
@@ -37,14 +35,12 @@ public class CadDmsApplication {
 	@Bean
 	CommandLineRunner testNeo4j(
 			UserRepository userRepository,
-			ProjectRepository projectRepository,
 			DirectoryRepository directoryRepository,
 			DocumentRepository documentRepository,
 			DocumentVersionRepository documentVersionRepository,
 			MetadataDefinitionRepository metadataDefinitionRepository) {
 		return args -> {
 			userRepository.deleteAll();
-			projectRepository.deleteAll();
 			directoryRepository.deleteAll();
 			documentRepository.deleteAll();
 			documentVersionRepository.deleteAll();
@@ -56,7 +52,7 @@ public class CadDmsApplication {
 					"Test User",
 					true);
 
-			var project = new ProjectEntity("test-project", user);
+			var rootDirectory = new DirectoryEntity("test-project", user);
 
 			var documentVersion = new DocumentVersionEntity(1,
 					"terrain",
@@ -81,29 +77,29 @@ public class CadDmsApplication {
 					user);
 
 			directory3.getDocuments().add(document);
-			project.getDirectories().add(directory);
+			rootDirectory.getDirectories().add(directory);
 
 			directory.getDirectories().add(directory2);
 			directory2.getDirectories().add(directory3);
 
 			document.addVersion(documentVersion2);
 
-			// SELF: Ein Feld mit eigenem Wert direkt am Projekt.
+			// SELF: Ein Feld mit eigenem Wert direkt am Verzeichnis.
 			var projectNumber = new MetadataDefinitionEntity("projectNumber", "Projektnummer", MetadataType.TEXT);
-			project.getMetadataBindings().add(
+			rootDirectory.getMetadataBindings().add(
 					new MetadataBinding(projectNumber,
-							List.of(MetadataTargetType.PROJECT),
+							List.of(MetadataTargetType.DIRECTORY),
 							MetadataReach.SELF));
-			project.getMetadataValues().add(new MetadataValue(projectNumber, "P-2026-001"));
+			rootDirectory.getMetadataValues().add(new MetadataValue(projectNumber, "P-2026-001"));
 
-			// DESCENDANTS: Dieses Feld gilt fuer alle Verzeichnisse im Projekt.
+			// DESCENDANTS: Dieses Feld gilt fuer alle untergeordneten Verzeichnisse.
 			var building = new MetadataDefinitionEntity("building", "Gebaeude", MetadataType.TEXT);
 			var buildingBinding = new MetadataBinding(
 					building,
 					List.of(MetadataTargetType.DIRECTORY),
 					MetadataReach.DESCENDANTS);
 			buildingBinding.setDefaultValue("Hauptgebaeude");
-			project.getMetadataBindings().add(buildingBinding);
+			rootDirectory.getMetadataBindings().add(buildingBinding);
 			directory2.getMetadataValues().add(new MetadataValue(building, "Nebengebaeude"));
 
 			// Dokumente im gesamten Teilbaum von directory erhalten dieses Binding.
@@ -124,9 +120,9 @@ public class CadDmsApplication {
 			// Speichert auch die Definitionen und beide Arten von Metadata-Relationships.
 			// Vererbung und Pflichtfeldpruefung sind bisher nur modelliert, nicht
 			// implementiert.
-			projectRepository.save(project);
+			directoryRepository.save(rootDirectory);
 
-			user.getProjectAccess().add(new ProjectAccessEntity(ProjectRole.OWNER, project));
+			user.getDirectoryAccess().add(new DirectoryAccessEntity(DirectoryRole.OWNER, rootDirectory));
 
 			userRepository.save(user);
 		};
