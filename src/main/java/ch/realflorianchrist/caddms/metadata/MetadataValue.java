@@ -1,5 +1,6 @@
 package ch.realflorianchrist.caddms.metadata;
 
+import org.springframework.data.annotation.Version;
 import org.springframework.data.neo4j.core.schema.RelationshipId;
 import org.springframework.data.neo4j.core.schema.RelationshipProperties;
 import org.springframework.data.neo4j.core.schema.TargetNode;
@@ -17,6 +18,9 @@ public class MetadataValue {
 
     @RelationshipId
     private Long id;
+
+    @Version
+    private Long persistenceVersion;
 
     @TargetNode
     private MetadataDefinitionEntity definition;

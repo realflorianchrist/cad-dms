@@ -7,8 +7,10 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
+import ch.realflorianchrist.caddms.directory.DirectoryAccessEntity;
 import ch.realflorianchrist.caddms.directory.DirectoryEntity;
 import ch.realflorianchrist.caddms.directory.DirectoryRepository;
+import ch.realflorianchrist.caddms.directory.DirectoryRole;
 import ch.realflorianchrist.caddms.document.DocumentEntity;
 import ch.realflorianchrist.caddms.document.DocumentRepository;
 import ch.realflorianchrist.caddms.document.DocumentVersionEntity;
@@ -20,8 +22,6 @@ import ch.realflorianchrist.caddms.metadata.MetadataReach;
 import ch.realflorianchrist.caddms.metadata.MetadataTargetType;
 import ch.realflorianchrist.caddms.metadata.MetadataType;
 import ch.realflorianchrist.caddms.metadata.MetadataValue;
-import ch.realflorianchrist.caddms.directory.DirectoryAccessEntity;
-import ch.realflorianchrist.caddms.directory.DirectoryRole;
 import ch.realflorianchrist.caddms.user.UserEntity;
 import ch.realflorianchrist.caddms.user.UserRepository;
 
